@@ -274,18 +274,20 @@ export default function PFPGenerator() {
             </button>
           </div>
 
-          <div className="flex-1 flex flex-col items-center overflow-auto">
+          <div className="flex-1 flex flex-col items-center">
             <div
               className="rounded-3xl overflow-hidden shadow-forg border-4"
               style={{
                 borderColor: "oklch(0.76 0.18 130)",
+                maxWidth: "500px",
+                width: "100%",
               }}
             >
               <canvas
                 ref={canvasRef}
                 width={CANVAS_SIZE}
                 height={CANVAS_SIZE}
-                className="block"
+                style={{ width: "100%", height: "auto", display: "block" }}
                 data-ocid="pfp.canvas_target"
               />
             </div>
