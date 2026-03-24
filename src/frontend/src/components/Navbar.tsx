@@ -42,7 +42,7 @@ export default function Navbar() {
             data-ocid="nav.link"
           >
             <img
-              src="/assets/uploads/forg_mascot_1-019d20ee-168c-752c-a08e-59c96dc2bfd2-1.png"
+              src="/assets/uploads/refined_forg_mascot-019d21f7-2b04-74d7-97f1-2647e44a1e49-1.png"
               alt="FORG mascot"
               className="w-10 h-10 object-contain"
             />

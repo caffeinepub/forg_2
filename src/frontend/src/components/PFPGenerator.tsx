@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 const FROG_SRC =
-  "/assets/uploads/forg_mascot_1-019d20ee-168c-752c-a08e-59c96dc2bfd2-1.png";
+  "/assets/uploads/refined_forg_mascot-019d21f7-2b04-74d7-97f1-2647e44a1e49-1.png";
 
 const CHAIN_SRC =
   "/assets/uploads/gold_chain-019d21aa-b6ef-777d-bfc7-3a154e915328-1.png";
