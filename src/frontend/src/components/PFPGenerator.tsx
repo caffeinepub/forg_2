@@ -13,6 +13,8 @@ const SUNGLASSES_SRC =
 const TOP_HAT_SRC =
   "/assets/uploads/top_hat-019d22c8-ed7e-705f-a4a7-e53b671df461-1.png";
 
+const RED_HAT_SRC =
+  "/assets/uploads/red_hat-019d274e-eb0a-714a-8e88-b6accc9119b8-1.png";
 const SUIT_SRC =
   "/assets/uploads/suit-019d22df-971c-77fb-81fa-6506cf44ad3d-1.png";
 
@@ -101,6 +103,7 @@ export default function PFPGenerator() {
   const [chainOn, setChainOn] = useState(false);
   const [sunglassesOn, setSunglassesOn] = useState(false);
   const [topHatOn, setTopHatOn] = useState(false);
+  const [redHatOn, setRedHatOn] = useState(false);
   const [activeCloth, setActiveCloth] = useState<
     "suit" | "army" | "cyber" | "ninja" | "beach" | null
   >(null);
@@ -133,6 +136,7 @@ export default function PFPGenerator() {
       CYBER_FORG_SRC,
       NINJA_SUIT_SRC,
       BEACH_READY_SRC,
+      RED_HAT_SRC,
     ];
     let loaded = 0;
     for (const src of allSrcs) {
@@ -306,7 +310,29 @@ export default function PFPGenerator() {
         );
       }
     }
-  }, [imagesLoaded, chainOn, sunglassesOn, topHatOn, activeCloth, selectedBg]);
+    if (redHatOn) {
+      const redHatImg = imagesRef.current[RED_HAT_SRC];
+      if (redHatImg?.complete && redHatImg.naturalWidth > 0) {
+        const rw = redHatImg.naturalWidth;
+        const rh = redHatImg.naturalHeight;
+        ctx.drawImage(
+          redHatImg,
+          (CANVAS_SIZE - rw) / 2,
+          (CANVAS_SIZE - rh) / 2,
+          rw,
+          rh,
+        );
+      }
+    }
+  }, [
+    imagesLoaded,
+    chainOn,
+    sunglassesOn,
+    topHatOn,
+    redHatOn,
+    activeCloth,
+    selectedBg,
+  ]);
 
   const handleDownload = async () => {
     const canvas = canvasRef.current;
@@ -593,6 +619,14 @@ export default function PFPGenerator() {
                 imgAlt="Top Hat"
                 label="🎩 Top Hat"
                 ocid="pfp.tophat.toggle"
+              />
+              <ToggleButton
+                on={redHatOn}
+                onClick={() => setRedHatOn((p) => !p)}
+                imgSrc={RED_HAT_SRC}
+                imgAlt="Red Hat"
+                label="🧢 Red Hat"
+                ocid="pfp.redhat.toggle"
               />
             </div>
 
