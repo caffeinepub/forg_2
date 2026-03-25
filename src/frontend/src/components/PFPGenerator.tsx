@@ -28,6 +28,9 @@ const NINJA_SUIT_SRC =
 const BEACH_READY_SRC =
   "/assets/uploads/beach_ready-019d26a2-51d6-774a-9e6d-670c71942d40-1.png";
 
+const SUPREME_SHIRT_SRC =
+  "/assets/uploads/supreme_shirt-019d270e-79b9-71e8-be83-f16931ec021c-2.png";
+
 const BACKGROUNDS = [
   {
     id: "swamp",
@@ -102,7 +105,7 @@ export default function PFPGenerator() {
   const [sunglassesOn, setSunglassesOn] = useState(false);
   const [topHatOn, setTopHatOn] = useState(false);
   const [activeCloth, setActiveCloth] = useState<
-    "suit" | "army" | "cyber" | "ninja" | "beach" | null
+    "suit" | "army" | "cyber" | "ninja" | "beach" | "supreme" | null
   >(null);
   const [selectedBg, setSelectedBg] = useState(BACKGROUNDS[0].src);
   const imagesRef = useRef<Record<string, HTMLImageElement>>({});
@@ -133,6 +136,7 @@ export default function PFPGenerator() {
       CYBER_FORG_SRC,
       NINJA_SUIT_SRC,
       BEACH_READY_SRC,
+      SUPREME_SHIRT_SRC,
     ];
     let loaded = 0;
     for (const src of allSrcs) {
@@ -255,6 +259,22 @@ export default function PFPGenerator() {
           (CANVAS_SIZE - bh) / 2,
           bw,
           bh,
+        );
+      }
+    }
+
+    // Supreme Shirt (clothes layer)
+    if (activeCloth === "supreme") {
+      const supremeImg = imagesRef.current[SUPREME_SHIRT_SRC];
+      if (supremeImg?.complete && supremeImg.naturalWidth > 0) {
+        const sw = supremeImg.naturalWidth;
+        const sh = supremeImg.naturalHeight;
+        ctx.drawImage(
+          supremeImg,
+          (CANVAS_SIZE - sw) / 2,
+          (CANVAS_SIZE - sh) / 2,
+          sw,
+          sh,
         );
       }
     }
@@ -566,6 +586,16 @@ export default function PFPGenerator() {
                 ocid="pfp.beachready.toggle"
               />
             </div>
+            <ToggleButton
+              on={activeCloth === "supreme"}
+              onClick={() =>
+                setActiveCloth((p) => (p === "supreme" ? null : "supreme"))
+              }
+              imgSrc={SUPREME_SHIRT_SRC}
+              imgAlt="Supreme Shirt"
+              label="👕 Supreme"
+              ocid="pfp.supremeshirt.toggle"
+            />
 
             {/* Accessories */}
             {sectionHeader("Accessories")}
