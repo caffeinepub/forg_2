@@ -22,6 +22,12 @@ const ARMY_UNIFORM_SRC =
 const CYBER_FORG_SRC =
   "/assets/uploads/cyber_forg-019d267b-ec1a-7683-982c-01cd6f04f927-1.png";
 
+const NINJA_SUIT_SRC =
+  "/assets/uploads/refined_ninja_suit-019d268d-f6d1-720e-9c51-d42df9ac42b9-2.png";
+
+const BEACH_READY_SRC =
+  "/assets/uploads/beach_ready-019d26a2-51d6-774a-9e6d-670c71942d40-1.png";
+
 const BG_SRC =
   "/assets/uploads/swamp2-019d2334-b1ef-727a-88f4-a40210d827a1-1.png";
 
@@ -86,7 +92,7 @@ export default function PFPGenerator() {
   const [sunglassesOn, setSunglassesOn] = useState(false);
   const [topHatOn, setTopHatOn] = useState(false);
   const [activeCloth, setActiveCloth] = useState<
-    "suit" | "army" | "cyber" | null
+    "suit" | "army" | "cyber" | "ninja" | "beach" | null
   >(null);
   const imagesRef = useRef<Record<string, HTMLImageElement>>({});
   const [imagesLoaded, setImagesLoaded] = useState(false);
@@ -114,6 +120,8 @@ export default function PFPGenerator() {
       SUIT_SRC,
       ARMY_UNIFORM_SRC,
       CYBER_FORG_SRC,
+      NINJA_SUIT_SRC,
+      BEACH_READY_SRC,
     ];
     let loaded = 0;
     for (const src of allSrcs) {
@@ -204,6 +212,38 @@ export default function PFPGenerator() {
           (CANVAS_SIZE - ch) / 2,
           cw,
           ch,
+        );
+      }
+    }
+
+    // Ninja Suit (clothes layer)
+    if (activeCloth === "ninja") {
+      const ninjaImg = imagesRef.current[NINJA_SUIT_SRC];
+      if (ninjaImg?.complete && ninjaImg.naturalWidth > 0) {
+        const nw = ninjaImg.naturalWidth;
+        const nh = ninjaImg.naturalHeight;
+        ctx.drawImage(
+          ninjaImg,
+          (CANVAS_SIZE - nw) / 2,
+          (CANVAS_SIZE - nh) / 2,
+          nw,
+          nh,
+        );
+      }
+    }
+
+    // Beach Ready (clothes layer)
+    if (activeCloth === "beach") {
+      const beachImg = imagesRef.current[BEACH_READY_SRC];
+      if (beachImg?.complete && beachImg.naturalWidth > 0) {
+        const bw = beachImg.naturalWidth;
+        const bh = beachImg.naturalHeight;
+        ctx.drawImage(
+          beachImg,
+          (CANVAS_SIZE - bw) / 2,
+          (CANVAS_SIZE - bh) / 2,
+          bw,
+          bh,
         );
       }
     }
@@ -461,6 +501,26 @@ export default function PFPGenerator() {
                 imgAlt="Cyber Forg"
                 label="🤖 Cyber Forg"
                 ocid="pfp.cyberforg.toggle"
+              />
+              <ToggleButton
+                on={activeCloth === "ninja"}
+                onClick={() =>
+                  setActiveCloth((p) => (p === "ninja" ? null : "ninja"))
+                }
+                imgSrc={NINJA_SUIT_SRC}
+                imgAlt="Ninja Suit"
+                label="🥷 Ninja Suit"
+                ocid="pfp.ninjasuit.toggle"
+              />
+              <ToggleButton
+                on={activeCloth === "beach"}
+                onClick={() =>
+                  setActiveCloth((p) => (p === "beach" ? null : "beach"))
+                }
+                imgSrc={BEACH_READY_SRC}
+                imgAlt="Beach Ready"
+                label="🌴 Beach Ready"
+                ocid="pfp.beachready.toggle"
               />
             </div>
 
