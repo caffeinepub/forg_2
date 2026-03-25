@@ -70,7 +70,7 @@ function ToggleButton({
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-2 rounded-2xl px-3 py-1.5 transition-all font-bold text-xs"
+      className="inline-flex items-center gap-1.5 rounded-2xl px-2.5 py-1.5 transition-all font-bold text-xs whitespace-nowrap"
       style={{
         background: on ? "oklch(0.76 0.18 130)" : "rgba(255,255,255,0.12)",
         color: on ? "oklch(0.14 0 0)" : "white",
@@ -82,7 +82,7 @@ function ToggleButton({
       <img
         src={imgSrc}
         alt={imgAlt}
-        className="w-7 h-7 rounded-lg object-contain border-2"
+        className="w-6 h-6 rounded-lg object-contain border-2"
         style={{
           borderColor: on ? "oklch(0.14 0 0)" : "transparent",
           background: "rgba(255,255,255,0.08)",
@@ -90,7 +90,7 @@ function ToggleButton({
       />
       <span>{label}</span>
       {on && (
-        <span className="ml-auto text-xs" aria-label="active">
+        <span className="text-xs" aria-label="active">
           ✓
         </span>
       )}
@@ -380,7 +380,6 @@ export default function PFPGenerator() {
           typeof navigator.canShare === "function" &&
           navigator.canShare({ files: [file] })
         ) {
-          // Mobile: native share sheet with image attached
           await navigator.share({
             files: [file],
             text: "I just joined the $forg army 🐸",
@@ -391,15 +390,12 @@ export default function PFPGenerator() {
         }
       }
     } catch (err: any) {
-      // AbortError means user cancelled — don't fallback to desktop flow
       if (err?.name === "AbortError") {
         setIsSharing(false);
         return;
       }
-      // Other errors fall through to desktop fallback
     }
 
-    // Desktop fallback: auto-download + open tweet intent
     const link = document.createElement("a");
     link.download = "forg-pfp.png";
     link.href = canvas.toDataURL("image/png");
@@ -498,164 +494,196 @@ export default function PFPGenerator() {
         </div>
 
         <div className="flex flex-col md:flex-row gap-8 items-start justify-center">
+          {/* Controls panel */}
           <div
-            className="w-full md:w-56 rounded-3xl p-4 shadow-forg"
+            className="w-full md:w-auto rounded-3xl p-4 shadow-forg"
             style={{
               background: "rgba(255,255,255,0.10)",
               backdropFilter: "blur(12px)",
               border: "2px solid oklch(0.76 0.18 130 / 0.4)",
             }}
           >
-            {/* Background */}
-            {sectionHeader("Background")}
-            <div className="flex flex-col gap-1.5 mb-3">
-              {BACKGROUNDS.map((bg) => (
-                <button
-                  key={bg.id}
-                  type="button"
-                  onClick={() => setSelectedBg(bg.src)}
-                  className="flex items-center gap-2 rounded-xl px-2 py-1.5 text-xs font-bold transition-all hover:scale-105 active:scale-95 text-left"
-                  style={{
-                    background:
-                      selectedBg === bg.src
-                        ? "oklch(0.76 0.18 130)"
-                        : "rgba(255,255,255,0.12)",
-                    color: selectedBg === bg.src ? "oklch(0.14 0 0)" : "white",
-                    border:
-                      selectedBg === bg.src
-                        ? "2px solid oklch(0.60 0.18 130)"
-                        : "2px solid transparent",
-                  }}
-                  data-ocid={`pfp.bg.${bg.id}.toggle`}
-                >
-                  <img
-                    src={bg.src}
-                    alt={bg.label}
-                    className="w-6 h-6 rounded object-cover"
+            {/* 3 columns: Background | Clothes | Accessories */}
+            <div className="flex gap-4 items-start">
+              {/* Background column */}
+              <div className="flex flex-col">
+                {sectionHeader("Background")}
+                <div className="flex flex-col gap-1.5">
+                  {BACKGROUNDS.map((bg) => (
+                    <button
+                      key={bg.id}
+                      type="button"
+                      onClick={() => setSelectedBg(bg.src)}
+                      className="inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-bold transition-all hover:scale-105 active:scale-95 whitespace-nowrap"
+                      style={{
+                        background:
+                          selectedBg === bg.src
+                            ? "oklch(0.76 0.18 130)"
+                            : "rgba(255,255,255,0.12)",
+                        color:
+                          selectedBg === bg.src ? "oklch(0.14 0 0)" : "white",
+                        border:
+                          selectedBg === bg.src
+                            ? "2px solid oklch(0.60 0.18 130)"
+                            : "2px solid transparent",
+                      }}
+                      data-ocid={`pfp.bg.${bg.id}.toggle`}
+                    >
+                      <img
+                        src={bg.src}
+                        alt={bg.label}
+                        className="w-5 h-5 rounded object-cover"
+                      />
+                      {bg.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div
+                style={{
+                  width: "1px",
+                  background: "oklch(0.76 0.18 130 / 0.3)",
+                  alignSelf: "stretch",
+                }}
+              />
+
+              {/* Clothes column */}
+              <div className="flex flex-col">
+                {sectionHeader("Clothes")}
+                <div className="flex flex-col gap-1.5">
+                  <ToggleButton
+                    on={activeCloth === "suit"}
+                    onClick={() =>
+                      setActiveCloth((p) => (p === "suit" ? null : "suit"))
+                    }
+                    imgSrc={SUIT_SRC}
+                    imgAlt="Suit"
+                    label="🕴️ Suit"
+                    ocid="pfp.suit.toggle"
                   />
-                  {bg.label}
-                </button>
-              ))}
+                  <ToggleButton
+                    on={activeCloth === "army"}
+                    onClick={() =>
+                      setActiveCloth((p) => (p === "army" ? null : "army"))
+                    }
+                    imgSrc={ARMY_UNIFORM_SRC}
+                    imgAlt="Army Uniform"
+                    label="🪖 Army Uniform"
+                    ocid="pfp.armyuniform.toggle"
+                  />
+                  <ToggleButton
+                    on={activeCloth === "cyber"}
+                    onClick={() =>
+                      setActiveCloth((p) => (p === "cyber" ? null : "cyber"))
+                    }
+                    imgSrc={CYBER_FORG_SRC}
+                    imgAlt="Cyber Forg"
+                    label="🤖 Cyber Forg"
+                    ocid="pfp.cyberforg.toggle"
+                  />
+                  <ToggleButton
+                    on={activeCloth === "ninja"}
+                    onClick={() =>
+                      setActiveCloth((p) => (p === "ninja" ? null : "ninja"))
+                    }
+                    imgSrc={NINJA_SUIT_SRC}
+                    imgAlt="Ninja Suit"
+                    label="🥷 Ninja Suit"
+                    ocid="pfp.ninjasuit.toggle"
+                  />
+                  <ToggleButton
+                    on={activeCloth === "beach"}
+                    onClick={() =>
+                      setActiveCloth((p) => (p === "beach" ? null : "beach"))
+                    }
+                    imgSrc={BEACH_READY_SRC}
+                    imgAlt="Beach Ready"
+                    label="🌴 Beach Ready"
+                    ocid="pfp.beachready.toggle"
+                  />
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div
+                style={{
+                  width: "1px",
+                  background: "oklch(0.76 0.18 130 / 0.3)",
+                  alignSelf: "stretch",
+                }}
+              />
+
+              {/* Accessories column */}
+              <div className="flex flex-col">
+                {sectionHeader("Accessories")}
+                <div className="flex flex-col gap-1.5">
+                  <ToggleButton
+                    on={chainOn}
+                    onClick={() => setChainOn((p) => !p)}
+                    imgSrc={CHAIN_SRC}
+                    imgAlt="Gold Chain"
+                    label="⛓️ Gold Chain"
+                    ocid="pfp.chain.toggle"
+                  />
+                  <ToggleButton
+                    on={sunglassesOn}
+                    onClick={() => setSunglassesOn((p) => !p)}
+                    imgSrc={SUNGLASSES_SRC}
+                    imgAlt="Sunglasses"
+                    label="😎 Sunglasses"
+                    ocid="pfp.sunglasses.toggle"
+                  />
+                  <ToggleButton
+                    on={topHatOn}
+                    onClick={() => setTopHatOn((p) => !p)}
+                    imgSrc={TOP_HAT_SRC}
+                    imgAlt="Top Hat"
+                    label="🎩 Top Hat"
+                    ocid="pfp.tophat.toggle"
+                  />
+                  <ToggleButton
+                    on={redHatOn}
+                    onClick={() => setRedHatOn((p) => !p)}
+                    imgSrc={RED_HAT_SRC}
+                    imgAlt="Red Hat"
+                    label="🧢 Red Hat"
+                    ocid="pfp.redhat.toggle"
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Clothes */}
-            {sectionHeader("Clothes")}
-            <div className="flex flex-col gap-1.5 mb-3">
-              <ToggleButton
-                on={activeCloth === "suit"}
-                onClick={() =>
-                  setActiveCloth((p) => (p === "suit" ? null : "suit"))
-                }
-                imgSrc={SUIT_SRC}
-                imgAlt="Suit"
-                label="🕴️ Suit"
-                ocid="pfp.suit.toggle"
-              />
-              <ToggleButton
-                on={activeCloth === "army"}
-                onClick={() =>
-                  setActiveCloth((p) => (p === "army" ? null : "army"))
-                }
-                imgSrc={ARMY_UNIFORM_SRC}
-                imgAlt="Army Uniform"
-                label="🪖 Army Uniform"
-                ocid="pfp.armyuniform.toggle"
-              />
-              <ToggleButton
-                on={activeCloth === "cyber"}
-                onClick={() =>
-                  setActiveCloth((p) => (p === "cyber" ? null : "cyber"))
-                }
-                imgSrc={CYBER_FORG_SRC}
-                imgAlt="Cyber Forg"
-                label="🤖 Cyber Forg"
-                ocid="pfp.cyberforg.toggle"
-              />
-              <ToggleButton
-                on={activeCloth === "ninja"}
-                onClick={() =>
-                  setActiveCloth((p) => (p === "ninja" ? null : "ninja"))
-                }
-                imgSrc={NINJA_SUIT_SRC}
-                imgAlt="Ninja Suit"
-                label="🥷 Ninja Suit"
-                ocid="pfp.ninjasuit.toggle"
-              />
-              <ToggleButton
-                on={activeCloth === "beach"}
-                onClick={() =>
-                  setActiveCloth((p) => (p === "beach" ? null : "beach"))
-                }
-                imgSrc={BEACH_READY_SRC}
-                imgAlt="Beach Ready"
-                label="🌴 Beach Ready"
-                ocid="pfp.beachready.toggle"
-              />
+            {/* Download & Share buttons */}
+            <div className="flex gap-2 mt-4">
+              <button
+                type="button"
+                onClick={handleDownload}
+                disabled={!imagesLoaded}
+                className="flex-1 py-2 rounded-full font-heading text-sm font-bold transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                style={{
+                  background: "oklch(0.90 0.18 125)",
+                  color: "oklch(0.14 0 0)",
+                }}
+                data-ocid="pfp.download_button"
+              >
+                ⬇ Download PNG
+              </button>
+              <button
+                type="button"
+                onClick={handleShareToX}
+                disabled={!imagesLoaded || isSharing}
+                className="flex-1 py-2 rounded-full font-heading text-sm font-bold transition-all hover:scale-105 active:scale-95 disabled:opacity-60"
+                style={{
+                  background: "oklch(0.14 0 0)",
+                  color: "oklch(1 0 0)",
+                }}
+                data-ocid="pfp.share_x_button"
+              >
+                {isSharing ? "Sharing..." : "𝕏 Share to X"}
+              </button>
             </div>
-
-            {/* Accessories */}
-            {sectionHeader("Accessories")}
-            <div className="flex flex-col gap-1.5">
-              <ToggleButton
-                on={chainOn}
-                onClick={() => setChainOn((p) => !p)}
-                imgSrc={CHAIN_SRC}
-                imgAlt="Gold Chain"
-                label="⛓️ Gold Chain"
-                ocid="pfp.chain.toggle"
-              />
-              <ToggleButton
-                on={sunglassesOn}
-                onClick={() => setSunglassesOn((p) => !p)}
-                imgSrc={SUNGLASSES_SRC}
-                imgAlt="Sunglasses"
-                label="😎 Sunglasses"
-                ocid="pfp.sunglasses.toggle"
-              />
-              <ToggleButton
-                on={topHatOn}
-                onClick={() => setTopHatOn((p) => !p)}
-                imgSrc={TOP_HAT_SRC}
-                imgAlt="Top Hat"
-                label="🎩 Top Hat"
-                ocid="pfp.tophat.toggle"
-              />
-              <ToggleButton
-                on={redHatOn}
-                onClick={() => setRedHatOn((p) => !p)}
-                imgSrc={RED_HAT_SRC}
-                imgAlt="Red Hat"
-                label="🧢 Red Hat"
-                ocid="pfp.redhat.toggle"
-              />
-            </div>
-
-            <button
-              type="button"
-              onClick={handleDownload}
-              disabled={!imagesLoaded}
-              className="mt-4 w-full py-2 rounded-full font-heading text-sm font-bold transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
-              style={{
-                background: "oklch(0.90 0.18 125)",
-                color: "oklch(0.14 0 0)",
-              }}
-              data-ocid="pfp.download_button"
-            >
-              ⬇ Download PNG
-            </button>
-            <button
-              type="button"
-              onClick={handleShareToX}
-              disabled={!imagesLoaded || isSharing}
-              className="mt-2 w-full py-2 rounded-full font-heading text-sm font-bold transition-all hover:scale-105 active:scale-95 disabled:opacity-60"
-              style={{
-                background: "oklch(0.14 0 0)",
-                color: "oklch(1 0 0)",
-              }}
-              data-ocid="pfp.share_x_button"
-            >
-              {isSharing ? "Sharing..." : "𝕏 Share to X"}
-            </button>
             {shareHint && (
               <p
                 className="mt-2 text-center text-xs font-bold animate-pulse"
