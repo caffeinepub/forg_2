@@ -1,23 +1,21 @@
-# FORG
+# FORG PFP Generator - Army Uniform Addition
 
 ## Current State
-The PFP generator has a 'Share to X' button that opens a pre-filled tweet with the caption 'I just joined the $forg army 🐸' and a link to the FORG community. It does not attach the generated PFP image.
+PFP generator has a Clothes section with one item: Suit. Accessories section has chain, sunglasses, top hat. All overlays render at natural pixel size, centered on 1024x1024 canvas, toggleable.
 
 ## Requested Changes (Diff)
 
 ### Add
-- Web Share API logic: when the user clicks 'Share to X', attempt `navigator.share({ files: [imageFile], text: caption, url: communityLink })` for mobile browsers that support file sharing
-- Desktop fallback: if Web Share API is not supported or fails, auto-download the PFP image AND open the tweet intent URL, plus show a brief inline message like 'Image downloaded — attach it to your tweet!'
+- Army uniform as a second toggleable item in the Clothes section
+- Asset: /assets/uploads/army_uniform-019d2662-b619-721b-93e2-b852bbbb22fe-1.png
 
 ### Modify
-- The existing 'Share to X' button handler in the PFP generator component to use the new logic above
+- PFP generator Clothes section to show both Suit and Army Uniform toggle buttons
 
 ### Remove
 - Nothing
 
 ## Implementation Plan
-1. In the PFP generator component, update the Share to X click handler
-2. Convert canvas to Blob (using `canvas.toBlob`)
-3. Try `navigator.canShare({ files: [...] })` and `navigator.share(...)` with the image File, caption text, and community URL
-4. On failure or unsupported (desktop), trigger PNG download and open tweet intent URL, then show a brief 'Image downloaded — attach it to your tweet!' message near the button for a few seconds
-5. Validate and build
+1. Add army uniform image to the clothes layers array in PFPGenerator component
+2. Add toggle button for army uniform in the Clothes section UI
+3. Render at natural pixel size, centered, same as suit

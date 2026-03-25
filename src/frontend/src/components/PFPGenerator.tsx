@@ -16,6 +16,9 @@ const TOP_HAT_SRC =
 const SUIT_SRC =
   "/assets/uploads/suit-019d22df-971c-77fb-81fa-6506cf44ad3d-1.png";
 
+const ARMY_UNIFORM_SRC =
+  "/assets/uploads/army_uniform-019d2662-b619-721b-93e2-b852bbbb22fe-1.png";
+
 const BG_SRC =
   "/assets/uploads/swamp2-019d2334-b1ef-727a-88f4-a40210d827a1-1.png";
 
@@ -80,6 +83,7 @@ export default function PFPGenerator() {
   const [sunglassesOn, setSunglassesOn] = useState(false);
   const [topHatOn, setTopHatOn] = useState(false);
   const [suitOn, setSuitOn] = useState(false);
+  const [armyUniformOn, setArmyUniformOn] = useState(false);
   const imagesRef = useRef<Record<string, HTMLImageElement>>({});
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [pfpCount, setPfpCount] = useState<number | null>(null);
@@ -104,6 +108,7 @@ export default function PFPGenerator() {
       SUNGLASSES_SRC,
       TOP_HAT_SRC,
       SUIT_SRC,
+      ARMY_UNIFORM_SRC,
     ];
     let loaded = 0;
     for (const src of allSrcs) {
@@ -166,6 +171,22 @@ export default function PFPGenerator() {
       }
     }
 
+    // Army Uniform (clothes layer)
+    if (armyUniformOn) {
+      const uniformImg = imagesRef.current[ARMY_UNIFORM_SRC];
+      if (uniformImg?.complete && uniformImg.naturalWidth > 0) {
+        const uw = uniformImg.naturalWidth;
+        const uh = uniformImg.naturalHeight;
+        ctx.drawImage(
+          uniformImg,
+          (CANVAS_SIZE - uw) / 2,
+          (CANVAS_SIZE - uh) / 2,
+          uw,
+          uh,
+        );
+      }
+    }
+
     // Gold chain
     if (chainOn) {
       const chainImg = imagesRef.current[CHAIN_SRC];
@@ -213,7 +234,7 @@ export default function PFPGenerator() {
         );
       }
     }
-  }, [imagesLoaded, chainOn, sunglassesOn, topHatOn, suitOn]);
+  }, [imagesLoaded, chainOn, sunglassesOn, topHatOn, suitOn, armyUniformOn]);
 
   const handleDownload = async () => {
     const canvas = canvasRef.current;
@@ -397,6 +418,14 @@ export default function PFPGenerator() {
                 imgAlt="Suit"
                 label="🕴️ Suit"
                 ocid="pfp.suit.toggle"
+              />
+              <ToggleButton
+                on={armyUniformOn}
+                onClick={() => setArmyUniformOn((p) => !p)}
+                imgSrc={ARMY_UNIFORM_SRC}
+                imgAlt="Army Uniform"
+                label="🪖 Army Uniform"
+                ocid="pfp.armyuniform.toggle"
               />
             </div>
 
