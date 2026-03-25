@@ -503,8 +503,8 @@ export default function PFPGenerator() {
               border: "2px solid oklch(0.76 0.18 130 / 0.4)",
             }}
           >
-            {/* 3 columns: Background | Clothes | Accessories */}
-            <div className="flex gap-4 items-start">
+            {/* 3 columns: Background | Clothes | Accessories — stacked on mobile, side by side on sm+ */}
+            <div className="flex flex-col sm:flex-row gap-4 items-start">
               {/* Background column */}
               <div className="flex flex-col">
                 {sectionHeader("Background")}
@@ -540,12 +540,21 @@ export default function PFPGenerator() {
                 </div>
               </div>
 
-              {/* Divider */}
+              {/* Divider — vertical on sm+, horizontal on mobile */}
               <div
+                className="hidden sm:block"
                 style={{
                   width: "1px",
                   background: "oklch(0.76 0.18 130 / 0.3)",
                   alignSelf: "stretch",
+                }}
+              />
+              <div
+                className="block sm:hidden"
+                style={{
+                  height: "1px",
+                  background: "oklch(0.76 0.18 130 / 0.3)",
+                  width: "100%",
                 }}
               />
 
@@ -606,12 +615,21 @@ export default function PFPGenerator() {
                 </div>
               </div>
 
-              {/* Divider */}
+              {/* Divider — vertical on sm+, horizontal on mobile */}
               <div
+                className="hidden sm:block"
                 style={{
                   width: "1px",
                   background: "oklch(0.76 0.18 130 / 0.3)",
                   alignSelf: "stretch",
+                }}
+              />
+              <div
+                className="block sm:hidden"
+                style={{
+                  height: "1px",
+                  background: "oklch(0.76 0.18 130 / 0.3)",
+                  width: "100%",
                 }}
               />
 
