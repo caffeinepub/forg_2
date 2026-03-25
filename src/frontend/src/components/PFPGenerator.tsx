@@ -19,6 +19,9 @@ const SUIT_SRC =
 const ARMY_UNIFORM_SRC =
   "/assets/uploads/army_uniform-019d2662-b619-721b-93e2-b852bbbb22fe-1.png";
 
+const CYBER_FORG_SRC =
+  "/assets/uploads/cyber_forg-019d267b-ec1a-7683-982c-01cd6f04f927-1.png";
+
 const BG_SRC =
   "/assets/uploads/swamp2-019d2334-b1ef-727a-88f4-a40210d827a1-1.png";
 
@@ -82,8 +85,9 @@ export default function PFPGenerator() {
   const [chainOn, setChainOn] = useState(false);
   const [sunglassesOn, setSunglassesOn] = useState(false);
   const [topHatOn, setTopHatOn] = useState(false);
-  const [suitOn, setSuitOn] = useState(false);
-  const [armyUniformOn, setArmyUniformOn] = useState(false);
+  const [activeCloth, setActiveCloth] = useState<
+    "suit" | "army" | "cyber" | null
+  >(null);
   const imagesRef = useRef<Record<string, HTMLImageElement>>({});
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [pfpCount, setPfpCount] = useState<number | null>(null);
@@ -109,6 +113,7 @@ export default function PFPGenerator() {
       TOP_HAT_SRC,
       SUIT_SRC,
       ARMY_UNIFORM_SRC,
+      CYBER_FORG_SRC,
     ];
     let loaded = 0;
     for (const src of allSrcs) {
@@ -156,7 +161,7 @@ export default function PFPGenerator() {
     }
 
     // Suit (clothes layer — above frog, below accessories)
-    if (suitOn) {
+    if (activeCloth === "suit") {
       const suitImg = imagesRef.current[SUIT_SRC];
       if (suitImg?.complete && suitImg.naturalWidth > 0) {
         const sw = suitImg.naturalWidth;
@@ -172,7 +177,7 @@ export default function PFPGenerator() {
     }
 
     // Army Uniform (clothes layer)
-    if (armyUniformOn) {
+    if (activeCloth === "army") {
       const uniformImg = imagesRef.current[ARMY_UNIFORM_SRC];
       if (uniformImg?.complete && uniformImg.naturalWidth > 0) {
         const uw = uniformImg.naturalWidth;
@@ -183,6 +188,22 @@ export default function PFPGenerator() {
           (CANVAS_SIZE - uh) / 2,
           uw,
           uh,
+        );
+      }
+    }
+
+    // Cyber Forg (clothes layer)
+    if (activeCloth === "cyber") {
+      const cyberImg = imagesRef.current[CYBER_FORG_SRC];
+      if (cyberImg?.complete && cyberImg.naturalWidth > 0) {
+        const cw = cyberImg.naturalWidth;
+        const ch = cyberImg.naturalHeight;
+        ctx.drawImage(
+          cyberImg,
+          (CANVAS_SIZE - cw) / 2,
+          (CANVAS_SIZE - ch) / 2,
+          cw,
+          ch,
         );
       }
     }
@@ -234,7 +255,7 @@ export default function PFPGenerator() {
         );
       }
     }
-  }, [imagesLoaded, chainOn, sunglassesOn, topHatOn, suitOn, armyUniformOn]);
+  }, [imagesLoaded, chainOn, sunglassesOn, topHatOn, activeCloth]);
 
   const handleDownload = async () => {
     const canvas = canvasRef.current;
@@ -412,20 +433,34 @@ export default function PFPGenerator() {
             {sectionHeader("Clothes")}
             <div className="flex flex-col gap-1.5 mb-3">
               <ToggleButton
-                on={suitOn}
-                onClick={() => setSuitOn((p) => !p)}
+                on={activeCloth === "suit"}
+                onClick={() =>
+                  setActiveCloth((p) => (p === "suit" ? null : "suit"))
+                }
                 imgSrc={SUIT_SRC}
                 imgAlt="Suit"
                 label="🕴️ Suit"
                 ocid="pfp.suit.toggle"
               />
               <ToggleButton
-                on={armyUniformOn}
-                onClick={() => setArmyUniformOn((p) => !p)}
+                on={activeCloth === "army"}
+                onClick={() =>
+                  setActiveCloth((p) => (p === "army" ? null : "army"))
+                }
                 imgSrc={ARMY_UNIFORM_SRC}
                 imgAlt="Army Uniform"
                 label="🪖 Army Uniform"
                 ocid="pfp.armyuniform.toggle"
+              />
+              <ToggleButton
+                on={activeCloth === "cyber"}
+                onClick={() =>
+                  setActiveCloth((p) => (p === "cyber" ? null : "cyber"))
+                }
+                imgSrc={CYBER_FORG_SRC}
+                imgAlt="Cyber Forg"
+                label="🤖 Cyber Forg"
+                ocid="pfp.cyberforg.toggle"
               />
             </div>
 
