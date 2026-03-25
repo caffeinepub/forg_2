@@ -22,7 +22,7 @@ export default function Footer() {
           <div className="flex flex-col items-center sm:items-start gap-3">
             <div className="flex items-center gap-2">
               <img
-                src="/assets/uploads/refined_forg_mascot-019d21f7-2b04-74d7-97f1-2647e44a1e49-1.png"
+                src="/assets/uploads/refined_forg_mascot_2-019d26cf-8766-70e5-b917-8040f05725fa-1.png"
                 alt="FORG"
                 className="w-10 h-10 object-contain"
               />

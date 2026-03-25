@@ -84,7 +84,7 @@ export default function HeroSection() {
           {/* Frog mascot */}
           <div className="flex justify-center md:justify-end">
             <img
-              src="/assets/uploads/refined_forg_mascot-019d21f7-2b04-74d7-97f1-2647e44a1e49-1.png"
+              src="/assets/uploads/refined_forg_mascot_2-019d26cf-8766-70e5-b917-8040f05725fa-1.png"
               alt="FORG mascot"
               className="w-64 sm:w-80 md:w-[420px] lg:w-[500px] max-w-full object-contain animate-float"
               style={{ filter: "drop-shadow(0 12px 32px rgba(14,59,44,0.35))" }}

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useActor } from "../hooks/useActor";
 
 const FROG_SRC =
-  "/assets/uploads/refined_forg_mascot-019d21f7-2b04-74d7-97f1-2647e44a1e49-1.png";
+  "/assets/uploads/refined_forg_mascot_2-019d26cf-8766-70e5-b917-8040f05725fa-1.png";
 
 const CHAIN_SRC =
   "/assets/uploads/refined_chain-019d2353-83cb-76d8-b443-0f0a0b1ce66d-1.png";
@@ -28,8 +28,18 @@ const NINJA_SUIT_SRC =
 const BEACH_READY_SRC =
   "/assets/uploads/beach_ready-019d26a2-51d6-774a-9e6d-670c71942d40-1.png";
 
-const BG_SRC =
-  "/assets/uploads/swamp2-019d2334-b1ef-727a-88f4-a40210d827a1-1.png";
+const BACKGROUNDS = [
+  {
+    id: "swamp",
+    label: "🌿 Swamp",
+    src: "/assets/uploads/swamp2-019d2334-b1ef-727a-88f4-a40210d827a1-1.png",
+  },
+  {
+    id: "galaxy",
+    label: "🌌 Galaxy",
+    src: "/assets/uploads/galaxy-019d26c0-25cb-7326-8988-a634303ea668-1.png",
+  },
+];
 
 // Canvas must be 1024x1024 — all overlay assets are pre-aligned to this size.
 const CANVAS_SIZE = 1024;
@@ -94,6 +104,7 @@ export default function PFPGenerator() {
   const [activeCloth, setActiveCloth] = useState<
     "suit" | "army" | "cyber" | "ninja" | "beach" | null
   >(null);
+  const [selectedBg, setSelectedBg] = useState(BACKGROUNDS[0].src);
   const imagesRef = useRef<Record<string, HTMLImageElement>>({});
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [pfpCount, setPfpCount] = useState<number | null>(null);
@@ -112,7 +123,7 @@ export default function PFPGenerator() {
 
   useEffect(() => {
     const allSrcs = [
-      BG_SRC,
+      ...BACKGROUNDS.map((b) => b.src),
       FROG_SRC,
       CHAIN_SRC,
       SUNGLASSES_SRC,
@@ -150,7 +161,7 @@ export default function PFPGenerator() {
     ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
     // Background
-    const bgImg = imagesRef.current[BG_SRC];
+    const bgImg = imagesRef.current[selectedBg];
     if (bgImg?.complete && bgImg.naturalWidth > 0) {
       const bw = bgImg.naturalWidth;
       const bh = bgImg.naturalHeight;
@@ -295,7 +306,7 @@ export default function PFPGenerator() {
         );
       }
     }
-  }, [imagesLoaded, chainOn, sunglassesOn, topHatOn, activeCloth]);
+  }, [imagesLoaded, chainOn, sunglassesOn, topHatOn, activeCloth, selectedBg]);
 
   const handleDownload = async () => {
     const canvas = canvasRef.current;
@@ -469,6 +480,38 @@ export default function PFPGenerator() {
               border: "2px solid oklch(0.76 0.18 130 / 0.4)",
             }}
           >
+            {/* Background */}
+            {sectionHeader("Background")}
+            <div className="flex flex-col gap-1.5 mb-3">
+              {BACKGROUNDS.map((bg) => (
+                <button
+                  key={bg.id}
+                  type="button"
+                  onClick={() => setSelectedBg(bg.src)}
+                  className="flex items-center gap-2 rounded-xl px-2 py-1.5 text-xs font-bold transition-all hover:scale-105 active:scale-95 text-left"
+                  style={{
+                    background:
+                      selectedBg === bg.src
+                        ? "oklch(0.76 0.18 130)"
+                        : "rgba(255,255,255,0.12)",
+                    color: selectedBg === bg.src ? "oklch(0.14 0 0)" : "white",
+                    border:
+                      selectedBg === bg.src
+                        ? "2px solid oklch(0.60 0.18 130)"
+                        : "2px solid transparent",
+                  }}
+                  data-ocid={`pfp.bg.${bg.id}.toggle`}
+                >
+                  <img
+                    src={bg.src}
+                    alt={bg.label}
+                    className="w-6 h-6 rounded object-cover"
+                  />
+                  {bg.label}
+                </button>
+              ))}
+            </div>
+
             {/* Clothes */}
             {sectionHeader("Clothes")}
             <div className="flex flex-col gap-1.5 mb-3">
