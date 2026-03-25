@@ -10,7 +10,7 @@ const PHASES = [
       { text: "Website Launch", done: true },
       { text: "CTO Takeover", done: true },
       { text: "250 Holders", done: true },
-      { text: "PFP Generator", done: false },
+      { text: "PFP Generator", done: true },
     ],
   },
   {
@@ -19,7 +19,7 @@ const PHASES = [
     title: "THE FROGLET RISE",
     emoji: "🐸",
     items: [
-      { text: "Build Liquidity Pool", done: false },
+      { text: "Build Liquidity Pool", done: true },
       { text: "500 Holders", done: false },
       { text: "CoinGecko Listing", done: false },
       { text: "CoinMarketCap Listing", done: false },
