@@ -1,5 +1,5 @@
 const BUY_LINK =
-  "https://raydium.io/swap/?inputCurrency=sol&outputCurrency=G4QRtYNRPyxdKwcAqqW3xSeEynDDxEyRvrDT9FJEpump";
+  "https://pump.fun/coin/G4QRtYNRPyxdKwcAqqW3xSeEynDDxEyRvrDT9FJEpump";
 
 export default function StickyBuyButton() {
   return (

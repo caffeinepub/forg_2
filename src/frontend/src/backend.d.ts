@@ -15,4 +15,6 @@ export interface MemeCoin {
 }
 export interface backendInterface {
     getMemeCoin(): Promise<MemeCoin>;
+    incrementPfpCount(): Promise<bigint>;
+    getPfpCount(): Promise<bigint>;
 }

@@ -97,6 +97,8 @@ export interface MemeCoin {
 }
 export interface backendInterface {
     getMemeCoin(): Promise<MemeCoin>;
+    getPfpCount(): Promise<bigint>;
+    incrementPfpCount(): Promise<bigint>;
 }
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
@@ -111,6 +113,34 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.getMemeCoin();
+            return result;
+        }
+    }
+    async getPfpCount(): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getPfpCount();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getPfpCount();
+            return result;
+        }
+    }
+    async incrementPfpCount(): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.incrementPfpCount();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.incrementPfpCount();
             return result;
         }
     }

@@ -3,7 +3,7 @@ import { toast } from "sonner";
 
 const CA = "G4QRtYNRPyxdKwcAqqW3xSeEynDDxEyRvrDT9FJEpump";
 const BUY_LINK =
-  "https://raydium.io/swap/?inputCurrency=sol&outputCurrency=G4QRtYNRPyxdKwcAqqW3xSeEynDDxEyRvrDT9FJEpump";
+  "https://pump.fun/coin/G4QRtYNRPyxdKwcAqqW3xSeEynDDxEyRvrDT9FJEpump";
 const PAIR = "55kcmUzV47QDZdLh2SV3dPkRSyGzianRFYvEXgJdBWh6";
 
 interface DexData {

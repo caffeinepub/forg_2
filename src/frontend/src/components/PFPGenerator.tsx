@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useActor } from "../hooks/useActor";
 
 const FROG_SRC =
   "/assets/uploads/refined_forg_mascot-019d21f7-2b04-74d7-97f1-2647e44a1e49-1.png";
@@ -30,12 +31,32 @@ const BACKGROUNDS = [
 // Canvas must be 1024x1024 — all overlay assets (chain, etc.) are pre-aligned to this size.
 const CANVAS_SIZE = 1024;
 
+// Extended actor type that includes the PFP count methods declared in backend.d.ts
+interface ExtendedActor {
+  getPfpCount(): Promise<bigint>;
+  incrementPfpCount(): Promise<bigint>;
+}
+
 export default function PFPGenerator() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [selectedBg, setSelectedBg] = useState("pond");
   const [chainOn, setChainOn] = useState(false);
   const imagesRef = useRef<Record<string, HTMLImageElement>>({});
   const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [pfpCount, setPfpCount] = useState<number | null>(null);
+  const [countPulse, setCountPulse] = useState(false);
+  const { actor } = useActor();
+
+  // Fetch initial PFP count
+  useEffect(() => {
+    if (!actor) return;
+    (actor as unknown as ExtendedActor)
+      .getPfpCount()
+      .then((count) => {
+        setPfpCount(Number(count));
+      })
+      .catch(() => {});
+  }, [actor]);
 
   useEffect(() => {
     const allSrcs = [...BACKGROUNDS.map((b) => b.src), FROG_SRC, CHAIN_SRC];
@@ -105,13 +126,27 @@ export default function PFPGenerator() {
     }
   }, [selectedBg, imagesLoaded, chainOn]);
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const link = document.createElement("a");
     link.download = "forg-pfp.png";
     link.href = canvas.toDataURL("image/png");
     link.click();
+
+    // Increment count in backend and update local state
+    if (actor) {
+      try {
+        const newCount = await (
+          actor as unknown as ExtendedActor
+        ).incrementPfpCount();
+        setPfpCount(Number(newCount));
+        setCountPulse(true);
+        setTimeout(() => setCountPulse(false), 600);
+      } catch {
+        // silent — download still worked
+      }
+    }
   };
 
   return (
@@ -154,6 +189,31 @@ export default function PFPGenerator() {
           >
             BUILD YOUR FORG! 🐸
           </h2>
+
+          {/* PFP Count Badge */}
+          <div className="flex justify-center mt-3 mb-2">
+            <span
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-full font-heading text-lg font-bold"
+              style={{
+                background: "oklch(0.28 0.12 145)",
+                border: "2px solid oklch(0.76 0.18 130)",
+                color: "oklch(0.90 0.22 130)",
+                boxShadow: "0 0 18px oklch(0.76 0.18 130 / 0.45)",
+                transform: countPulse ? "scale(1.18)" : "scale(1)",
+                transition: "transform 0.3s cubic-bezier(0.34,1.56,0.64,1)",
+              }}
+              data-ocid="pfp.success_state"
+            >
+              🐸{" "}
+              {pfpCount === null ? (
+                <span style={{ opacity: 0.6 }}>...</span>
+              ) : (
+                <span>{pfpCount.toLocaleString()}</span>
+              )}{" "}
+              PFPs Made
+            </span>
+          </div>
+
           <p
             className="mt-2 text-base"
             style={{ color: "oklch(0.88 0.04 155)" }}

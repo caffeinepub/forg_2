@@ -16,7 +16,11 @@ export interface MemeCoin {
   'symbol' : string,
   'contractAddress' : string,
 }
-export interface _SERVICE { 'getMemeCoin' : ActorMethod<[], MemeCoin> }
+export interface _SERVICE {
+  'getMemeCoin' : ActorMethod<[], MemeCoin>,
+  'getPfpCount' : ActorMethod<[], bigint>,
+  'incrementPfpCount' : ActorMethod<[], bigint>,
+}
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];
 export declare const idlFactory: IDL.InterfaceFactory;

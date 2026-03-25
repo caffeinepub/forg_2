@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 const BUY_LINK =
-  "https://raydium.io/swap/?inputCurrency=sol&outputCurrency=G4QRtYNRPyxdKwcAqqW3xSeEynDDxEyRvrDT9FJEpump";
+  "https://pump.fun/coin/G4QRtYNRPyxdKwcAqqW3xSeEynDDxEyRvrDT9FJEpump";
 
 const NAV_ITEMS = [
   { label: "HOME", id: "hero" },

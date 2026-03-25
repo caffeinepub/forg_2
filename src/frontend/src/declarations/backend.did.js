@@ -17,6 +17,8 @@ export const MemeCoin = IDL.Record({
 
 export const idlService = IDL.Service({
   'getMemeCoin' : IDL.Func([], [MemeCoin], ['query']),
+  'getPfpCount' : IDL.Func([], [IDL.Nat], ['query']),
+  'incrementPfpCount' : IDL.Func([], [IDL.Nat], []),
 });
 
 export const idlInitArgs = [];
@@ -29,7 +31,11 @@ export const idlFactory = ({ IDL }) => {
     'contractAddress' : IDL.Text,
   });
   
-  return IDL.Service({ 'getMemeCoin' : IDL.Func([], [MemeCoin], ['query']) });
+  return IDL.Service({
+    'getMemeCoin' : IDL.Func([], [MemeCoin], ['query']),
+    'getPfpCount' : IDL.Func([], [IDL.Nat], ['query']),
+    'incrementPfpCount' : IDL.Func([], [IDL.Nat], []),
+  });
 };
 
 export const init = ({ IDL }) => { return []; };
