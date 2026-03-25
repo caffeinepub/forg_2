@@ -5,61 +5,106 @@ const FROG_SRC =
   "/assets/uploads/refined_forg_mascot-019d21f7-2b04-74d7-97f1-2647e44a1e49-1.png";
 
 const CHAIN_SRC =
-  "/assets/uploads/gold_chain-019d21aa-b6ef-777d-bfc7-3a154e915328-1.png";
+  "/assets/uploads/refined_chain-019d2353-83cb-76d8-b443-0f0a0b1ce66d-1.png";
 
-const BACKGROUNDS = [
-  {
-    id: "pond",
-    label: "Pond",
-    emoji: "🌊",
-    src: "/assets/uploads/pond_pfp-019d2110-9c8c-71d9-95b1-67fe8c858c7f-4.png",
-  },
-  {
-    id: "lily",
-    label: "Lily Pad",
-    emoji: "🪷",
-    src: "/assets/uploads/lily_pad_pfp-019d2110-8819-70e7-9d83-42bba4dedd6e-3.png",
-  },
-  {
-    id: "night",
-    label: "Night Swamp",
-    emoji: "🌙",
-    src: "/assets/uploads/night_swamp-019d2110-a051-77ab-a2b7-4ab0953af34e-5.png",
-  },
-];
+const SUNGLASSES_SRC =
+  "/assets/uploads/sunglasses-019d22a1-cf2e-70fd-9a2b-7ccd5e521c96-1.png";
 
-// Canvas must be 1024x1024 — all overlay assets (chain, etc.) are pre-aligned to this size.
+const TOP_HAT_SRC =
+  "/assets/uploads/top_hat-019d22c8-ed7e-705f-a4a7-e53b671df461-1.png";
+
+const SUIT_SRC =
+  "/assets/uploads/suit-019d22df-971c-77fb-81fa-6506cf44ad3d-1.png";
+
+const BG_SRC =
+  "/assets/uploads/swamp2-019d2334-b1ef-727a-88f4-a40210d827a1-1.png";
+
+// Canvas must be 1024x1024 — all overlay assets are pre-aligned to this size.
 const CANVAS_SIZE = 1024;
 
-// Extended actor type that includes the PFP count methods declared in backend.d.ts
 interface ExtendedActor {
   getPfpCount(): Promise<bigint>;
   incrementPfpCount(): Promise<bigint>;
 }
 
+function ToggleButton({
+  on,
+  onClick,
+  imgSrc,
+  imgAlt,
+  label,
+  ocid,
+}: {
+  on: boolean;
+  onClick: () => void;
+  imgSrc: string;
+  imgAlt: string;
+  label: string;
+  ocid: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex items-center gap-2 rounded-2xl px-3 py-1.5 transition-all font-bold text-xs"
+      style={{
+        background: on ? "oklch(0.76 0.18 130)" : "rgba(255,255,255,0.12)",
+        color: on ? "oklch(0.14 0 0)" : "white",
+        border: `2px solid ${on ? "oklch(0.90 0.18 125)" : "transparent"}`,
+        transform: on ? "scale(1.04)" : "scale(1)",
+      }}
+      data-ocid={ocid}
+    >
+      <img
+        src={imgSrc}
+        alt={imgAlt}
+        className="w-7 h-7 rounded-lg object-contain border-2"
+        style={{
+          borderColor: on ? "oklch(0.14 0 0)" : "transparent",
+          background: "rgba(255,255,255,0.08)",
+        }}
+      />
+      <span>{label}</span>
+      {on && (
+        <span className="ml-auto text-xs" aria-label="active">
+          ✓
+        </span>
+      )}
+    </button>
+  );
+}
+
 export default function PFPGenerator() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [selectedBg, setSelectedBg] = useState("pond");
   const [chainOn, setChainOn] = useState(false);
+  const [sunglassesOn, setSunglassesOn] = useState(false);
+  const [topHatOn, setTopHatOn] = useState(false);
+  const [suitOn, setSuitOn] = useState(false);
   const imagesRef = useRef<Record<string, HTMLImageElement>>({});
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [pfpCount, setPfpCount] = useState<number | null>(null);
   const [countPulse, setCountPulse] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
+  const [shareHint, setShareHint] = useState(false);
   const { actor } = useActor();
 
-  // Fetch initial PFP count
   useEffect(() => {
     if (!actor) return;
     (actor as unknown as ExtendedActor)
       .getPfpCount()
-      .then((count) => {
-        setPfpCount(Number(count));
-      })
+      .then((count) => setPfpCount(Number(count)))
       .catch(() => {});
   }, [actor]);
 
   useEffect(() => {
-    const allSrcs = [...BACKGROUNDS.map((b) => b.src), FROG_SRC, CHAIN_SRC];
+    const allSrcs = [
+      BG_SRC,
+      FROG_SRC,
+      CHAIN_SRC,
+      SUNGLASSES_SRC,
+      TOP_HAT_SRC,
+      SUIT_SRC,
+    ];
     let loaded = 0;
     for (const src of allSrcs) {
       const img = new Image();
@@ -86,45 +131,89 @@ export default function PFPGenerator() {
 
     ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-    // Background — draw at natural pixel size, centered
-    const bg = BACKGROUNDS.find((b) => b.id === selectedBg);
-    if (bg) {
-      const bgImg = imagesRef.current[bg.src];
-      if (bgImg?.complete && bgImg.naturalWidth > 0) {
-        const bw = bgImg.naturalWidth;
-        const bh = bgImg.naturalHeight;
-        const bx = (CANVAS_SIZE - bw) / 2;
-        const by = (CANVAS_SIZE - bh) / 2;
-        ctx.drawImage(bgImg, bx, by);
-      } else {
-        ctx.fillStyle = "#3EC6D6";
-        ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-      }
+    // Background
+    const bgImg = imagesRef.current[BG_SRC];
+    if (bgImg?.complete && bgImg.naturalWidth > 0) {
+      const bw = bgImg.naturalWidth;
+      const bh = bgImg.naturalHeight;
+      ctx.drawImage(bgImg, (CANVAS_SIZE - bw) / 2, (CANVAS_SIZE - bh) / 2);
+    } else {
+      ctx.fillStyle = "#3EC6D6";
+      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
     }
 
-    // Frog — draw at natural pixel size, centered
+    // Frog
     const frogImg = imagesRef.current[FROG_SRC];
     if (frogImg?.complete && frogImg.naturalWidth > 0) {
       const fw = frogImg.naturalWidth;
       const fh = frogImg.naturalHeight;
-      const fx = (CANVAS_SIZE - fw) / 2;
-      const fy = (CANVAS_SIZE - fh) / 2;
-      ctx.drawImage(frogImg, fx, fy);
+      ctx.drawImage(frogImg, (CANVAS_SIZE - fw) / 2, (CANVAS_SIZE - fh) / 2);
     }
 
-    // Gold chain — draw at EXACT natural pixel size, centered on 1024x1024 canvas.
-    // No scaling. No stretching. This is a pre-aligned overlay asset.
+    // Suit (clothes layer — above frog, below accessories)
+    if (suitOn) {
+      const suitImg = imagesRef.current[SUIT_SRC];
+      if (suitImg?.complete && suitImg.naturalWidth > 0) {
+        const sw = suitImg.naturalWidth;
+        const sh = suitImg.naturalHeight;
+        ctx.drawImage(
+          suitImg,
+          (CANVAS_SIZE - sw) / 2,
+          (CANVAS_SIZE - sh) / 2,
+          sw,
+          sh,
+        );
+      }
+    }
+
+    // Gold chain
     if (chainOn) {
       const chainImg = imagesRef.current[CHAIN_SRC];
       if (chainImg?.complete && chainImg.naturalWidth > 0) {
         const cw = chainImg.naturalWidth;
         const ch = chainImg.naturalHeight;
-        const dx = (CANVAS_SIZE - cw) / 2;
-        const dy = (CANVAS_SIZE - ch) / 2;
-        ctx.drawImage(chainImg, dx, dy, cw, ch);
+        ctx.drawImage(
+          chainImg,
+          (CANVAS_SIZE - cw) / 2,
+          (CANVAS_SIZE - ch) / 2,
+          cw,
+          ch,
+        );
       }
     }
-  }, [selectedBg, imagesLoaded, chainOn]);
+
+    // Sunglasses
+    if (sunglassesOn) {
+      const sgImg = imagesRef.current[SUNGLASSES_SRC];
+      if (sgImg?.complete && sgImg.naturalWidth > 0) {
+        const sw = sgImg.naturalWidth;
+        const sh = sgImg.naturalHeight;
+        ctx.drawImage(
+          sgImg,
+          (CANVAS_SIZE - sw) / 2,
+          (CANVAS_SIZE - sh) / 2,
+          sw,
+          sh,
+        );
+      }
+    }
+
+    // Top Hat
+    if (topHatOn) {
+      const hatImg = imagesRef.current[TOP_HAT_SRC];
+      if (hatImg?.complete && hatImg.naturalWidth > 0) {
+        const hw = hatImg.naturalWidth;
+        const hh = hatImg.naturalHeight;
+        ctx.drawImage(
+          hatImg,
+          (CANVAS_SIZE - hw) / 2,
+          (CANVAS_SIZE - hh) / 2,
+          hw,
+          hh,
+        );
+      }
+    }
+  }, [imagesLoaded, chainOn, sunglassesOn, topHatOn, suitOn]);
 
   const handleDownload = async () => {
     const canvas = canvasRef.current;
@@ -134,7 +223,6 @@ export default function PFPGenerator() {
     link.href = canvas.toDataURL("image/png");
     link.click();
 
-    // Increment count in backend and update local state
     if (actor) {
       try {
         const newCount = await (
@@ -144,10 +232,79 @@ export default function PFPGenerator() {
         setCountPulse(true);
         setTimeout(() => setCountPulse(false), 600);
       } catch {
-        // silent — download still worked
+        // silent
       }
     }
   };
+
+  const handleShareToX = async () => {
+    const canvas = canvasRef.current;
+    if (!canvas || isSharing) return;
+
+    setIsSharing(true);
+
+    const tweetText = encodeURIComponent("I just joined the $forg army 🐸");
+    const tweetUrl = encodeURIComponent(
+      "https://x.com/i/communities/2034649883919941893",
+    );
+    const tweetIntentUrl = `https://twitter.com/intent/tweet?text=${tweetText}&url=${tweetUrl}`;
+
+    try {
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob(resolve, "image/png"),
+      );
+
+      if (blob) {
+        const file = new File([blob], "forg-pfp.png", { type: "image/png" });
+
+        if (
+          typeof navigator.canShare === "function" &&
+          navigator.canShare({ files: [file] })
+        ) {
+          // Mobile: native share sheet with image attached
+          await navigator.share({
+            files: [file],
+            text: "I just joined the $forg army 🐸",
+            url: "https://x.com/i/communities/2034649883919941893",
+          });
+          setIsSharing(false);
+          return;
+        }
+      }
+    } catch (err: any) {
+      // AbortError means user cancelled — don't fallback to desktop flow
+      if (err?.name === "AbortError") {
+        setIsSharing(false);
+        return;
+      }
+      // Other errors fall through to desktop fallback
+    }
+
+    // Desktop fallback: auto-download + open tweet intent
+    const link = document.createElement("a");
+    link.download = "forg-pfp.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+
+    window.open(tweetIntentUrl, "_blank");
+
+    setShareHint(true);
+    setTimeout(() => setShareHint(false), 4000);
+    setIsSharing(false);
+  };
+
+  const sectionHeader = (title: string) => (
+    <h3
+      className="font-heading text-xs font-bold uppercase tracking-widest mb-1.5"
+      style={{
+        color: "oklch(0.76 0.18 130)",
+        borderBottom: "1px solid oklch(0.76 0.18 130 / 0.3)",
+        paddingBottom: "4px",
+      }}
+    >
+      {title}
+    </h3>
+  );
 
   return (
     <section id="pfp-generator" className="relative py-16 px-4 overflow-hidden">
@@ -190,7 +347,6 @@ export default function PFPGenerator() {
             BUILD YOUR FORG! 🐸
           </h2>
 
-          {/* PFP Count Badge */}
           <div className="flex justify-center mt-3 mb-2">
             <span
               className="inline-flex items-center gap-2 px-5 py-2 rounded-full font-heading text-lg font-bold"
@@ -218,112 +374,66 @@ export default function PFPGenerator() {
             className="mt-2 text-base"
             style={{ color: "oklch(0.88 0.04 155)" }}
           >
-            Pick a background, download your PFP, and join the FORG army!
+            Dress up your forg and join the army!
           </p>
         </div>
 
         <div className="flex flex-col md:flex-row gap-8 items-start justify-center">
           <div
-            className="w-full md:w-64 rounded-3xl p-6 shadow-forg"
+            className="w-full md:w-56 rounded-3xl p-4 shadow-forg"
             style={{
               background: "rgba(255,255,255,0.10)",
               backdropFilter: "blur(12px)",
               border: "2px solid oklch(0.76 0.18 130 / 0.4)",
             }}
           >
-            <h3
-              className="font-heading text-xl mb-4"
-              style={{ color: "oklch(0.90 0.18 125)" }}
-            >
-              Background
-            </h3>
-            <div className="flex flex-col gap-3">
-              {BACKGROUNDS.map((bg) => (
-                <button
-                  type="button"
-                  key={bg.id}
-                  onClick={() => setSelectedBg(bg.id)}
-                  className="flex items-center gap-3 rounded-2xl px-4 py-3 transition-all font-bold text-sm"
-                  style={{
-                    background:
-                      selectedBg === bg.id
-                        ? "oklch(0.76 0.18 130)"
-                        : "rgba(255,255,255,0.12)",
-                    color: selectedBg === bg.id ? "oklch(0.14 0 0)" : "white",
-                    border: `2px solid ${
-                      selectedBg === bg.id
-                        ? "oklch(0.90 0.18 125)"
-                        : "transparent"
-                    }`,
-                    transform:
-                      selectedBg === bg.id ? "scale(1.04)" : "scale(1)",
-                  }}
-                  data-ocid={`pfp.${bg.id}.button`}
-                >
-                  <img
-                    src={bg.src}
-                    alt={bg.label}
-                    className="w-10 h-10 rounded-lg object-cover border-2"
-                    style={{
-                      borderColor:
-                        selectedBg === bg.id
-                          ? "oklch(0.14 0 0)"
-                          : "transparent",
-                    }}
-                  />
-                  <span>
-                    {bg.emoji} {bg.label}
-                  </span>
-                </button>
-              ))}
+            {/* Clothes */}
+            {sectionHeader("Clothes")}
+            <div className="flex flex-col gap-1.5 mb-3">
+              <ToggleButton
+                on={suitOn}
+                onClick={() => setSuitOn((p) => !p)}
+                imgSrc={SUIT_SRC}
+                imgAlt="Suit"
+                label="🕴️ Suit"
+                ocid="pfp.suit.toggle"
+              />
             </div>
 
-            <h3
-              className="font-heading text-xl mt-6 mb-4"
-              style={{ color: "oklch(0.90 0.18 125)" }}
-            >
-              Accessories
-            </h3>
-            <div className="flex flex-col gap-3">
-              <button
-                type="button"
-                onClick={() => setChainOn((prev) => !prev)}
-                className="flex items-center gap-3 rounded-2xl px-4 py-3 transition-all font-bold text-sm"
-                style={{
-                  background: chainOn
-                    ? "oklch(0.76 0.18 130)"
-                    : "rgba(255,255,255,0.12)",
-                  color: chainOn ? "oklch(0.14 0 0)" : "white",
-                  border: `2px solid ${
-                    chainOn ? "oklch(0.90 0.18 125)" : "transparent"
-                  }`,
-                  transform: chainOn ? "scale(1.04)" : "scale(1)",
-                }}
-                data-ocid="pfp.chain.toggle"
-              >
-                <img
-                  src={CHAIN_SRC}
-                  alt="Gold Chain"
-                  className="w-10 h-10 rounded-lg object-contain border-2"
-                  style={{
-                    borderColor: chainOn ? "oklch(0.14 0 0)" : "transparent",
-                    background: "rgba(255,255,255,0.08)",
-                  }}
-                />
-                <span>⛓️ Gold Chain</span>
-                {chainOn && (
-                  <span className="ml-auto text-base" aria-label="active">
-                    ✓
-                  </span>
-                )}
-              </button>
+            {/* Accessories */}
+            {sectionHeader("Accessories")}
+            <div className="flex flex-col gap-1.5">
+              <ToggleButton
+                on={chainOn}
+                onClick={() => setChainOn((p) => !p)}
+                imgSrc={CHAIN_SRC}
+                imgAlt="Gold Chain"
+                label="⛓️ Gold Chain"
+                ocid="pfp.chain.toggle"
+              />
+              <ToggleButton
+                on={sunglassesOn}
+                onClick={() => setSunglassesOn((p) => !p)}
+                imgSrc={SUNGLASSES_SRC}
+                imgAlt="Sunglasses"
+                label="😎 Sunglasses"
+                ocid="pfp.sunglasses.toggle"
+              />
+              <ToggleButton
+                on={topHatOn}
+                onClick={() => setTopHatOn((p) => !p)}
+                imgSrc={TOP_HAT_SRC}
+                imgAlt="Top Hat"
+                label="🎩 Top Hat"
+                ocid="pfp.tophat.toggle"
+              />
             </div>
 
             <button
               type="button"
               onClick={handleDownload}
               disabled={!imagesLoaded}
-              className="mt-6 w-full py-3 rounded-full font-heading text-base font-bold transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+              className="mt-4 w-full py-2 rounded-full font-heading text-sm font-bold transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
               style={{
                 background: "oklch(0.90 0.18 125)",
                 color: "oklch(0.14 0 0)",
@@ -332,6 +442,28 @@ export default function PFPGenerator() {
             >
               ⬇ Download PNG
             </button>
+            <button
+              type="button"
+              onClick={handleShareToX}
+              disabled={!imagesLoaded || isSharing}
+              className="mt-2 w-full py-2 rounded-full font-heading text-sm font-bold transition-all hover:scale-105 active:scale-95 disabled:opacity-60"
+              style={{
+                background: "oklch(0.14 0 0)",
+                color: "oklch(1 0 0)",
+              }}
+              data-ocid="pfp.share_x_button"
+            >
+              {isSharing ? "Sharing..." : "𝕏 Share to X"}
+            </button>
+            {shareHint && (
+              <p
+                className="mt-2 text-center text-xs font-bold animate-pulse"
+                style={{ color: "oklch(0.90 0.18 125)" }}
+                data-ocid="pfp.success_state"
+              >
+                Image downloaded — attach it to your tweet!
+              </p>
+            )}
           </div>
 
           <div className="flex-1 flex flex-col items-center">
