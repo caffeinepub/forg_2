@@ -104,7 +104,7 @@ export default function HeroSection() {
               FORG
             </h1>
             <p
-              className="font-body text-lg sm:text-xl font-bold mb-6 max-w-md"
+              className="font-body text-xl sm:text-2xl font-bold mb-6 max-w-md"
               style={{
                 color: "oklch(0.14 0.05 155)",
                 textShadow: "0 1px 8px rgba(255,255,255,0.8)",
