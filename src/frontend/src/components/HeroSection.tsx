@@ -174,7 +174,7 @@ export default function HeroSection() {
               </button>
             </div>
             <h2
-              className="font-heading text-7xl sm:text-8xl md:text-9xl leading-none text-center md:text-left mt-2"
+              className="font-heading text-4xl sm:text-5xl md:text-6xl leading-none text-center md:text-left mt-2"
               style={{
                 color: "oklch(0.90 0.18 125)",
                 WebkitTextStroke: "3px oklch(0.14 0.04 155)",
