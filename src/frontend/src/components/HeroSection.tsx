@@ -173,12 +173,16 @@ export default function HeroSection() {
                 COPY
               </button>
             </div>
-            <p
-              className="text-3xl sm:text-4xl font-bold text-center md:text-left mt-2"
-              style={{ color: "oklch(0.27 0.07 155)" }}
+            <h2
+              className="font-heading text-7xl sm:text-8xl md:text-9xl leading-none text-center md:text-left mt-2"
+              style={{
+                color: "oklch(0.90 0.18 125)",
+                WebkitTextStroke: "3px oklch(0.14 0.04 155)",
+                textShadow: "0 6px 24px rgba(14,59,44,0.45)",
+              }}
             >
-              Create your frog. Join the pond.
-            </p>
+              Create your forg. Join the pond.
+            </h2>
           </div>
         </div>
       </div>
