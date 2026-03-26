@@ -174,7 +174,7 @@ export default function HeroSection() {
               </button>
             </div>
             <p
-              className="text-sm font-bold text-center md:text-left mt-2"
+              className="text-3xl sm:text-4xl font-bold text-center md:text-left mt-2"
               style={{ color: "oklch(0.27 0.07 155)" }}
             >
               Create your frog. Join the pond.
