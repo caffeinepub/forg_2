@@ -110,11 +110,7 @@ export default function HeroSection() {
                 textShadow: "0 1px 8px rgba(255,255,255,0.8)",
               }}
             >
-              The Pond&apos;s Most Degenerate Frog.
-              <br />
-              <span style={{ color: "oklch(0.27 0.07 155)" }}>
-                Ribbit or Regret. 🐸
-              </span>
+              You're either in the pond… or watching from the shore.
             </p>
 
             {/* Buttons */}
@@ -177,6 +173,12 @@ export default function HeroSection() {
                 COPY
               </button>
             </div>
+            <p
+              className="text-sm font-bold text-center md:text-left mt-2"
+              style={{ color: "oklch(0.27 0.07 155)" }}
+            >
+              Create your frog. Join the pond.
+            </p>
           </div>
         </div>
       </div>
