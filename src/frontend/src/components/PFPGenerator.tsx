@@ -110,7 +110,10 @@ export default function PFPGenerator() {
   const [selectedBg, setSelectedBg] = useState(BACKGROUNDS[0].src);
   const imagesRef = useRef<Record<string, HTMLImageElement>>({});
   const [imagesLoaded, setImagesLoaded] = useState(false);
-  const [pfpCount, setPfpCount] = useState<number | null>(null);
+  const [pfpCount, setPfpCount] = useState<number>(() => {
+    const stored = localStorage.getItem("forgPfpCount");
+    return stored ? Number.parseInt(stored, 10) : 0;
+  });
   const [countPulse, setCountPulse] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const [shareHint, setShareHint] = useState(false);
@@ -120,7 +123,16 @@ export default function PFPGenerator() {
     if (!actor) return;
     (actor as unknown as ExtendedActor)
       .getPfpCount()
-      .then((count) => setPfpCount(Number(count)))
+      .then((count) => {
+        const backendCount = Number(count);
+        const localCount = Number.parseInt(
+          localStorage.getItem("forgPfpCount") || "0",
+          10,
+        );
+        const displayCount = Math.max(backendCount, localCount);
+        setPfpCount(displayCount);
+        localStorage.setItem("forgPfpCount", String(displayCount));
+      })
       .catch(() => {});
   }, [actor]);
 
@@ -342,16 +354,26 @@ export default function PFPGenerator() {
     link.href = canvas.toDataURL("image/png");
     link.click();
 
+    // Always increment locally first
+    const localCount =
+      Number.parseInt(localStorage.getItem("forgPfpCount") || "0", 10) + 1;
+    setPfpCount(localCount);
+    localStorage.setItem("forgPfpCount", String(localCount));
+    setCountPulse(true);
+    setTimeout(() => setCountPulse(false), 600);
+
     if (actor) {
       try {
         const newCount = await (
           actor as unknown as ExtendedActor
         ).incrementPfpCount();
-        setPfpCount(Number(newCount));
-        setCountPulse(true);
-        setTimeout(() => setCountPulse(false), 600);
+        const n = Number(newCount);
+        if (n > localCount) {
+          setPfpCount(n);
+          localStorage.setItem("forgPfpCount", String(n));
+        }
       } catch {
-        // silent
+        // local count already set above
       }
     }
   };
@@ -475,13 +497,7 @@ export default function PFPGenerator() {
               }}
               data-ocid="pfp.success_state"
             >
-              🐸{" "}
-              {pfpCount === null ? (
-                <span style={{ opacity: 0.6 }}>...</span>
-              ) : (
-                <span>{pfpCount.toLocaleString()}</span>
-              )}{" "}
-              PFPs Made
+              🐸 {pfpCount.toLocaleString()} PFPs Made
             </span>
           </div>
 
